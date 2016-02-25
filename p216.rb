@@ -1,23 +1,29 @@
 def combination_sum3(k, n)
-  all_sol = {}
-  max_n = n > 9 ? 10 : n + 1
-  solve(k, n, max_n, all_sol)
-  all_sol.count
+  all_sol = []
+  solve(n, k, 1, [], all_sol)
+  all_sol.uniq
 end
 
-def solve(k, n, max_n, all_sol)
-  key = "#{n}_#{k}"
-
-  unless all_sol.has_key?(key)
-    val = 1
-    2.upto(max_n).each do |gap|
-      1.upto( n / gap).each do |c|
-        val += solve(k - 1, n - c * gap, gap, all_sol)
-      end
+def solve(remain, k, n, solution, all_sols)
+  return if remain > 9 * k
+  return if remain < n
+  if k == 1
+    if remain >= n && remain <= 9
+      solution << remain 
+      all_sols << solution.dup
+      solution.delete(remain)
     end
-    all_sol[key] = val
-  end 
-  all_sol[key]
+    return
+  end
+  
+  n.upto(9).each do |i|
+    solution << i
+    solve(remain - i, k - 1, i + 1, solution, all_sols)
+    solution.delete(i)
+
+    solve(remain, k, i + 1, solution, all_sols)
+  end
 end
 
-puts combination_sum3(3, 7)
+ret = combination_sum3(3, 9)
+puts "#{ret}"
